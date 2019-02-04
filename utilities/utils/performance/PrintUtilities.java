@@ -32,7 +32,7 @@ public class PrintUtilities {
 	 * @param evaluatorCount
 	 */
 	public static void printCSV(int depth, long average, long evaluatorCount) {
-		System.out.println(depth + ", " + ((double) average / 100000000.0) + ", " + evaluatorCount);
+		System.out.println(depth + ", " + ((double) average / 1000000000.0) + ", " + evaluatorCount);
 	}
 
 }

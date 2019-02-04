@@ -14,6 +14,7 @@ import minimax.fourinarow.core.arrays.Piece;
  */
 public class TicTacToeGameState extends AbstractGameState<TicTacToeMove> {
 
+	public final static int MAXIMUM_NUMBER_OF_PLYS = 9;
 	public final static int ROWS = 3;
 	public final static int COLUMNS = 3;
 

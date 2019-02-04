@@ -72,7 +72,7 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 	 * Number of iterations used in timing runs.
 	 */
 	private static int MAX_NUMBER_OF_ITERATION = 20;
-	private static int MAX_DEPTH = 5;
+	private static int MAX_DEPTH = 40;
 	private static int MIN_DEPTH = 0;
 
 	public FourInARowPerformanceAgent(FourInARowGameState gameState,
@@ -93,10 +93,10 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 	public static void main(String[] args) {
 		PerformanceEvaluationFunction<FourInARowGameState> evaluator = new PerformanceEvaluationFunction<FourInARowGameState>(
 				new FourInARowEvaluationFunction());
-		FourInARowAgent tester = new FourInARowPerformanceAgent(ALMOST_MIDDLE_WIN_STATE, evaluator);
+		FourInARowAgent tester = new FourInARowPerformanceAgent(EMPTY_STATE, evaluator);
 		TimingUtilities<FourInARowMove, FourInARowGameState> timer = new TimingUtilities<FourInARowMove, FourInARowGameState>();
 		for (int depth = MIN_DEPTH; depth <= MAX_DEPTH; ++depth) {
-			long time = timer.averageTimedEvaluate(MAX_NUMBER_OF_ITERATION, tester, MAX_DEPTH, true);
+			long time = timer.timedEvaluate(tester, depth, true);
 			PrintUtilities.printWithWords(depth, time, evaluator.getCounterString());
 			evaluator.resetCounter();
 		}
