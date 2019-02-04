@@ -3,8 +3,14 @@ package minimax.fourinarow.performance.arrays;
 import minimax.fourinarow.core.arrays.FourInARowAgent;
 import minimax.fourinarow.core.arrays.FourInARowEvaluationFunction;
 import minimax.fourinarow.core.arrays.FourInARowGameState;
+import minimax.fourinarow.core.arrays.FourInARowMove;
 import minimax.fourinarow.core.arrays.FourInARowMoveGeneration;
 import minimax.fourinarow.core.arrays.Piece;
+import utils.implementation.EvaluationFunction;
+import utils.implementation.MoveGeneration;
+import utils.performance.PerformanceEvaluationFunction;
+import utils.performance.PrintUtilities;
+import utils.performance.TimingUtilities;
 
 /**
  * This Agent is used to count the number of boards that are evaluated at
@@ -69,32 +75,14 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 	private static int MAX_DEPTH = 5;
 	private static int MIN_DEPTH = 0;
 
-	public FourInARowPerformanceAgent(FourInARowGameState gameState, FourInARowEvaluationFunction evaluator) {
+	public FourInARowPerformanceAgent(FourInARowGameState gameState,
+			EvaluationFunction<FourInARowGameState> evaluator) {
 		super(gameState, new FourInARowMoveGeneration(), evaluator);
 	}
 
-	/**
-	 * Prints the performance data for a specific depth in easy to read string
-	 * format.
-	 * 
-	 * @param depth
-	 * @param average
-	 * @param evaluatorString
-	 */
-	private static void printWithWords(int depth, long average, String evaluatorString) {
-		System.out.println(
-				"Depth: " + depth + ", Time: " + ((double) average / 100000000.0) + " seconds, " + evaluatorString);
-	}
-
-	/**
-	 * Prints the performance data for a specific depth in CSV format.
-	 * 
-	 * @param depth
-	 * @param average
-	 * @param evaluatorCount
-	 */
-	private static void printCSV(int depth, long average, int evaluatorCount) {
-		System.out.println(depth + ((double) average / 100000000.0) + evaluatorCount);
+	public FourInARowPerformanceAgent(FourInARowGameState gameState,
+			MoveGeneration<FourInARowMove, FourInARowGameState> moveGenerator) {
+		super(gameState, moveGenerator, new FourInARowEvaluationFunction());
 	}
 
 	/**
@@ -103,20 +91,13 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		FourInARowPerformanceEvaluationFunction evaluator = new FourInARowPerformanceEvaluationFunction();
+		PerformanceEvaluationFunction<FourInARowGameState> evaluator = new PerformanceEvaluationFunction<FourInARowGameState>(
+				new FourInARowEvaluationFunction());
 		FourInARowAgent tester = new FourInARowPerformanceAgent(ALMOST_MIDDLE_WIN_STATE, evaluator);
+		TimingUtilities<FourInARowMove, FourInARowGameState> timer = new TimingUtilities<FourInARowMove, FourInARowGameState>();
 		for (int depth = MIN_DEPTH; depth <= MAX_DEPTH; ++depth) {
-			long average = 0;
-			for (int iteration = 0; iteration < MAX_NUMBER_OF_ITERATION; ++iteration) {
-				long time = System.nanoTime();
-				tester.search(depth, true);
-				time = System.nanoTime() - time;
-				average += (time / MAX_NUMBER_OF_ITERATION);
-				if (iteration != MAX_NUMBER_OF_ITERATION - 1) {
-					evaluator.resetCounter();
-				}
-			}
-			printWithWords(depth, average, evaluator.getCounterString());
+			long time = timer.averageTimedEvaluate(MAX_NUMBER_OF_ITERATION, tester, MAX_DEPTH, true);
+			PrintUtilities.printWithWords(depth, time, evaluator.getCounterString());
 			evaluator.resetCounter();
 		}
 	}

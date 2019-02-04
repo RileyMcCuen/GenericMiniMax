@@ -10,18 +10,21 @@ public class TicTacToeMiniMaxAgent extends AbstractMiniMaxAgent<TicTacToeMove, T
 			MoveGeneration<TicTacToeMove, TicTacToeGameState> moveGenerator,
 			EvaluationFunction<TicTacToeGameState> evaluator) {
 		super(gameState, moveGenerator, evaluator);
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Initializes the Agent with its standard implementations of its evaluation and
+	 * move generation functions.
+	 * 
+	 * @param gameState - the game-state that needs to be evaluated.
+	 */
 	public TicTacToeMiniMaxAgent(TicTacToeGameState gameState) {
 		super(gameState, new TicTacToeMoveGeneration(), new TicTacToeEvaluationFunction());
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return "I am a perfect Tic Tac Toe Agent.";
 	}
 
 }

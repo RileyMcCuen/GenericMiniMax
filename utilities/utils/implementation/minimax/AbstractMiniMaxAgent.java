@@ -51,7 +51,7 @@ public abstract class AbstractMiniMaxAgent<M extends AbstractMove, G extends Abs
 	 * @param moveGenerator
 	 * @param evaluator
 	 */
-	public AbstractMiniMaxAgent(G gameState, MoveGeneration<M, G> moveGenerator, EvaluationFunction<G> evaluator) {
+	protected AbstractMiniMaxAgent(G gameState, MoveGeneration<M, G> moveGenerator, EvaluationFunction<G> evaluator) {
 		this.gameState = gameState;
 		this.moveGenerator = moveGenerator;
 		this.evaluator = evaluator;
@@ -114,6 +114,15 @@ public abstract class AbstractMiniMaxAgent<M extends AbstractMove, G extends Abs
 	 */
 	public M getBestMove() {
 		return bestMove;
+	}
+
+	/**
+	 * Updates the gameState to the one given.
+	 * 
+	 * @param gameState
+	 */
+	public void setState(G gameState) {
+		this.gameState = gameState;
 	}
 
 	/**
