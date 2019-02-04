@@ -8,6 +8,7 @@ import minimax.fourinarow.core.arrays.FourInARowMoveGeneration;
 import minimax.fourinarow.core.arrays.Piece;
 import utils.implementation.EvaluationFunction;
 import utils.implementation.MoveGeneration;
+import utils.implementation.minimax.AbstractMiniMaxAgent;
 import utils.performance.PerformanceEvaluationFunction;
 import utils.performance.PrintUtilities;
 import utils.performance.TimingUtilities;
@@ -88,18 +89,21 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 	/**
 	 * The main method to run to get a performance evaluation of the Agent.
 	 * 
+	 * 
 	 * @param args
+	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		PerformanceEvaluationFunction<FourInARowGameState> evaluator = new PerformanceEvaluationFunction<FourInARowGameState>(
 				new FourInARowEvaluationFunction());
-		FourInARowAgent tester = new FourInARowPerformanceAgent(EMPTY_STATE, evaluator);
+		FourInARowAgent tester = new FourInARowPerformanceAgent(EMPTY_STATE.deepCopy(true), evaluator);
 		TimingUtilities<FourInARowMove, FourInARowGameState> timer = new TimingUtilities<FourInARowMove, FourInARowGameState>();
-		for (int depth = MIN_DEPTH; depth <= MAX_DEPTH; ++depth) {
-			long time = timer.timedEvaluate(tester, depth, true);
-			PrintUtilities.printWithWords(depth, time, evaluator.getCounterString());
-			evaluator.resetCounter();
-		}
+		long time = timer.averageTimedEvaluate(20, tester, 12, true);
+		PrintUtilities.printWithWords(12, time, evaluator.getCounterString());
+		evaluator.resetCounter();
+		time = timer.averageTimedEvaluationIterativeMultipleDepths(20, tester, 1, 12, true);
+		PrintUtilities.printWithWords(12, time, evaluator.getCounterString());
+		System.exit(0);
 	}
 
 }

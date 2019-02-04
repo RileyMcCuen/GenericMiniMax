@@ -35,11 +35,11 @@ public class FourInARowAgent extends AbstractMiniMaxAgent<FourInARowMove, FourIn
 	 * then it is reduced to the maximum depth left in the game.
 	 */
 	@Override
-	public void search(int depth, boolean findMax) {
+	public FourInARowMove search(int depth, boolean findMax) {
 		if (depth + gameState.getPlyNumber() > FourInARowGameState.MAX_NUMBER_OF_PLYS) {
 			depth = FourInARowGameState.MAX_NUMBER_OF_PLYS - gameState.getPlyNumber();
 		}
-		super.search(depth, findMax);
+		return super.search(depth, findMax);
 	}
 
 	/**
@@ -47,14 +47,14 @@ public class FourInARowAgent extends AbstractMiniMaxAgent<FourInARowMove, FourIn
 	 * then it is reduced to the maximum depth left in the game.
 	 */
 	@Override
-	public void searchIterativeDeepening(int minDepth, int maxDepth, boolean findMax) {
+	public FourInARowMove searchIterativeDeepening(int minDepth, int maxDepth, boolean findMax, long time) {
 		if (minDepth + gameState.getPlyNumber() > FourInARowGameState.MAX_NUMBER_OF_PLYS) {
 			minDepth = FourInARowGameState.MAX_NUMBER_OF_PLYS - gameState.getPlyNumber();
 		}
 		if (maxDepth + gameState.getPlyNumber() > FourInARowGameState.MAX_NUMBER_OF_PLYS) {
 			maxDepth = FourInARowGameState.MAX_NUMBER_OF_PLYS - gameState.getPlyNumber();
 		}
-		super.searchIterativeDeepening(minDepth, maxDepth, findMax);
+		return super.searchIterativeDeepening(minDepth, maxDepth, findMax, time);
 	}
 
 	@Override

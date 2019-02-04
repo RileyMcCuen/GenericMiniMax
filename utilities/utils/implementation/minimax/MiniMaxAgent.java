@@ -1,5 +1,7 @@
 package utils.implementation.minimax;
 
+import utils.implementation.AbstractMove;
+
 /**
  * 
  * This is the interface that any simple MiniMaxAgent must implement. The
@@ -10,7 +12,7 @@ package utils.implementation.minimax;
  *
  */
 
-public interface MiniMaxAgent {
+public interface MiniMaxAgent<M extends AbstractMove> {
 
 	/**
 	 * 
@@ -19,7 +21,7 @@ public interface MiniMaxAgent {
 	 * @param depth   - maximum depth that the game-tree should be searched.
 	 * @param findMax - whether to call findMax() or findMin() first.
 	 */
-	public void search(int depth, boolean findMax);
+	public M search(int depth, boolean findMax);
 
 	/**
 	 * 
@@ -31,6 +33,6 @@ public interface MiniMaxAgent {
 	 * @param maxDepth - the maximum depth to search till on the last iteration.
 	 * @param findMax  - whether to call findMax() or findMin() first.
 	 */
-	public void searchIterativeDeepening(int minDepth, int maxDepth, boolean findMax);
+	public M searchIterativeDeepening(int minDepth, int maxDepth, boolean findMax, long time);
 
 }

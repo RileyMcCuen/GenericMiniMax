@@ -64,7 +64,7 @@ public class FourInARowGameState extends AbstractGameState<FourInARowMove> {
 	 */
 	private Piece[][] copyBoard(Piece[][] board) {
 		Piece[][] copy = new Piece[ROWS][];
-		for (int row = 0; row < COLUMNS; ++row) {
+		for (int row = 0; row < ROWS; ++row) {
 			copy[row] = Arrays.copyOf(board[row], COLUMNS);
 		}
 		return copy;

@@ -1,5 +1,13 @@
 package utils.implementation.minimax;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import utils.implementation.AbstractGameState;
 import utils.implementation.AbstractMove;
 import utils.implementation.EvaluationFunction;
@@ -22,17 +30,19 @@ import utils.implementation.MoveGeneration;
  */
 
 public abstract class AbstractMiniMaxAgent<M extends AbstractMove, G extends AbstractGameState<M>> extends Object
-		implements MiniMaxAgent {
+		implements MiniMaxAgent<M> {
 
 	public static final int MINIMUM_DEPTH = 0;
 	public static final int ALPHA_BEGINNING_VALUE = Integer.MIN_VALUE;
 	public static final int BETA_BEGINNING_VALUE = Integer.MAX_VALUE;
+	public static final long DEFAULT_DELAYMS = 5000;
 
 	protected G gameState;
 	protected MoveGeneration<M, G> moveGenerator;
 	protected EvaluationFunction<G> evaluator;
 	protected M bestMove = null;
 	protected int maxDepth = 0;
+	protected final ExecutorService xs = Executors.newSingleThreadScheduledExecutor();
 
 	/**
 	 * These values are passed to the evaluation function and if an evaluation is
@@ -186,20 +196,134 @@ public abstract class AbstractMiniMaxAgent<M extends AbstractMove, G extends Abs
 	}
 
 	@Override
-	public void search(int depth, boolean findMax) {
+	public M search(int depth, boolean findMax) {
 		maxDepth = depth;
 		if (findMax) {
 			findMax(MINIMUM_DEPTH, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
 		} else {
 			findMin(MINIMUM_DEPTH, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
 		}
+		return getBestMove();
+	}
+
+	/**
+	 * Attempts to find the value minimizing move in the current game-state. Checks
+	 * if it is interrupted at ever iteration. If it is it throws Exception.
+	 * 
+	 * @param depth - the current depth of the search.
+	 * @param alpha - the current alpha value at this point in the search.
+	 * @param beta  - the current beta value at this point in the search.
+	 * @return - the minimum value of all potential moves.
+	 * @throws InterruptedException
+	 */
+	private int findMinInterruptable(int depth, int alpha, int beta) throws InterruptedException {
+		if (Thread.currentThread().isInterrupted()) {
+			throw new InterruptedException("Stopped at depth: " + depth);
+		}
+		int evaluation = evaluate();
+		if (depth == maxDepth || evaluation == positiveTerminalEvaluation || evaluation == negativeTerminalEvaluation) {
+			return evaluation;
+		}
+		for (M move : getMoves()) {
+			makeMove(move);
+			move.setValue(findMaxInterruptable(depth + 1, alpha, beta));
+			undoMove(move);
+			if (move.getValue() < beta) {
+				beta = move.getValue();
+				if (depth == MINIMUM_DEPTH) {
+					bestMove = move;
+				}
+			}
+			if (depth != MINIMUM_DEPTH && alpha >= beta) {
+				return Integer.MIN_VALUE;
+			}
+		}
+		return beta;
+	}
+
+	/**
+	 * Attempts to find the value maximizing move in the current game-state. Checks
+	 * if it is interrupted at ever iteration. If it is it throws Exception.
+	 * 
+	 * @param depth - the current depth of the search.
+	 * @param alpha - the current alpha value at this point in the search.
+	 * @param beta  - the current beta value at this point in the search.
+	 * @return - the maximum value of all potential moves.
+	 * @throws InterruptedException
+	 */
+	private int findMaxInterruptable(int depth, int alpha, int beta) throws InterruptedException {
+		if (Thread.currentThread().isInterrupted()) {
+			throw new InterruptedException("Stopped at depth: " + depth);
+		}
+		int evaluation = evaluate();
+		if (depth == maxDepth || evaluation == positiveTerminalEvaluation || evaluation == negativeTerminalEvaluation) {
+			return evaluation;
+		}
+		for (M move : getMoves()) {
+			makeMove(move);
+			move.setValue(findMinInterruptable(depth + 1, alpha, beta));
+			undoMove(move);
+			if (move.getValue() > alpha) {
+				alpha = move.getValue();
+				if (depth == MINIMUM_DEPTH) {
+					bestMove = move;
+				}
+			}
+			if (depth != MINIMUM_DEPTH && alpha >= beta) {
+				return Integer.MAX_VALUE;
+			}
+		}
+		return alpha;
+	}
+
+	/**
+	 * Runs a single search that can be interrupted if it goes over time.
+	 * 
+	 * @param depth
+	 * @param findMax
+	 * @return
+	 * @throws InterruptedException
+	 */
+	private M searchInterruptable(int depth, boolean findMax) throws InterruptedException {
+		if (Thread.currentThread().isInterrupted()) {
+			return getBestMove();
+		}
+		maxDepth = depth;
+		if (findMax) {
+			findMaxInterruptable(MINIMUM_DEPTH, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
+		} else {
+			findMinInterruptable(MINIMUM_DEPTH, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
+		}
+		return getBestMove();
 	}
 
 	@Override
-	public void searchIterativeDeepening(int minDepth, int maxDepth, boolean findMax) {
-		for (int depth = minDepth; depth <= maxDepth; ++depth) {
-			search(depth, findMax);
+	public M searchIterativeDeepening(int minDepth, int maxDepth, boolean findMax, long time) {
+		Callable<M> iterativeSearch = new Callable<M>() {
+
+			@Override
+			public M call() throws Exception {
+				M bestMoveSoFar = null;
+				for (int depth = minDepth; depth <= maxDepth; ++depth) {
+					try {
+						M deeperMove = searchInterruptable(depth, findMax);
+						bestMoveSoFar = deeperMove;
+					} catch (InterruptedException e) {
+						return bestMoveSoFar;
+					}
+				}
+				return bestMoveSoFar;
+			}
+
+		};
+		Future<M> futureMove = xs.submit(iterativeSearch);
+
+		try {
+			futureMove.get(time, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+			futureMove.cancel(true);
 		}
+		return getBestMove();
 	}
 
 	/**

@@ -33,7 +33,7 @@ public class TicTacToePerformanceAgent extends TicTacToeMiniMaxAgent {
 	public static void main(String[] args) {
 		PerformanceEvaluationFunction<TicTacToeGameState> evaluator = new PerformanceEvaluationFunction<TicTacToeGameState>(
 				new TicTacToeEvaluationFunction());
-		TicTacToePerformanceAgent tester = new TicTacToePerformanceAgent(EMPTY_STATE, evaluator);
+		TicTacToePerformanceAgent tester = new TicTacToePerformanceAgent(EMPTY_STATE.deepCopy(true), evaluator);
 		TimingUtilities<TicTacToeMove, TicTacToeGameState> timer = new TimingUtilities<TicTacToeMove, TicTacToeGameState>();
 		long time = timer.timedEvaluate(tester, 9, true);
 		PrintUtilities.printWithWords(9, time, evaluator.getCounterString());

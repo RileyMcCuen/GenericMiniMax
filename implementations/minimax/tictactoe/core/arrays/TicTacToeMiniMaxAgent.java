@@ -23,22 +23,22 @@ public class TicTacToeMiniMaxAgent extends AbstractMiniMaxAgent<TicTacToeMove, T
 	}
 
 	@Override
-	public void search(int depth, boolean findMax) {
+	public TicTacToeMove search(int depth, boolean findMax) {
 		if (depth + gameState.getPlyNumber() > TicTacToeGameState.MAXIMUM_NUMBER_OF_PLYS) {
 			depth = TicTacToeGameState.MAXIMUM_NUMBER_OF_PLYS - gameState.getPlyNumber();
 		}
-		super.search(depth, findMax);
+		return super.search(depth, findMax);
 	}
 
 	@Override
-	public void searchIterativeDeepening(int minDepth, int maxDepth, boolean findMax) {
+	public TicTacToeMove searchIterativeDeepening(int minDepth, int maxDepth, boolean findMax, long time) {
 		if (minDepth + gameState.getPlyNumber() > TicTacToeGameState.MAXIMUM_NUMBER_OF_PLYS) {
 			minDepth = TicTacToeGameState.MAXIMUM_NUMBER_OF_PLYS - gameState.getPlyNumber();
 		}
 		if (maxDepth + gameState.getPlyNumber() > TicTacToeGameState.MAXIMUM_NUMBER_OF_PLYS) {
 			maxDepth = TicTacToeGameState.MAXIMUM_NUMBER_OF_PLYS - gameState.getPlyNumber();
 		}
-		super.searchIterativeDeepening(minDepth, maxDepth, findMax);
+		return super.searchIterativeDeepening(minDepth, maxDepth, findMax, time);
 	}
 
 	@Override
