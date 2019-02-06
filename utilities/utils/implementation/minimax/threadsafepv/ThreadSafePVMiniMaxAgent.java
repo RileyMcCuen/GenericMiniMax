@@ -1,5 +1,6 @@
-package utils.implementation.minimax.threadsafe;
+package utils.implementation.minimax.threadsafepv;
 
+import utils.datastructures.stack.Stack;
 import utils.implementation.AbstractGameState;
 import utils.implementation.AbstractMove;
 
@@ -25,7 +26,7 @@ import utils.implementation.AbstractMove;
  * @param <M> - abstract move implementation
  * @param <G> - game-state implementation
  */
-public interface ThreadSafeMiniMaxAgent<M extends AbstractMove, G extends AbstractGameState<M>> {
+public interface ThreadSafePVMiniMaxAgent<M extends AbstractMove, G extends AbstractGameState<M>> {
 
 	/**
 	 * This method is called by the other two methods that do iterative deepening.
@@ -35,21 +36,10 @@ public interface ThreadSafeMiniMaxAgent<M extends AbstractMove, G extends Abstra
 	 * @param findMax - whether to call findMax() first or not.
 	 * @return - best move path found.
 	 * @throws InterruptedException - if the seach runs out of time this should be
-	 *                              progogated out to the iterative deepening search
+	 *                              propagated out to the iterative deepening search
 	 *                              method that called this search.
 	 */
-	public Iterable<M> search(int depth, boolean findMax) throws InterruptedException;
-
-	/**
-	 * Search that returns a collection of moves from the best path that has been
-	 * found.
-	 * 
-	 * @param minDepth - minimum depth to start iterative deepening from.
-	 * @param maxDepth - the deepest depth that iterative deepening will search to.
-	 * @param findMax  - whether to call findMax() first or not.
-	 * @return - best move path found.
-	 */
-	public Iterable<M> searchMoveList(int minDepth, int maxDepth, boolean findMax);
+	public Stack<M> searchWithPV(int depth, boolean findMax, Stack<M> startPath) throws InterruptedException;
 
 	/**
 	 * Search that returns a collection of moves from the best path that has been
@@ -61,6 +51,6 @@ public interface ThreadSafeMiniMaxAgent<M extends AbstractMove, G extends Abstra
 	 * @param path     - the last best path found
 	 * @return - best move path found.
 	 */
-	public Iterable<M> bestFirstSearchWithMoveList(int minDepth, int maxDepth, boolean findMax, Iterable<M> path);
+	public Stack<M> iterativeSearchWithPV(int minDepth, int maxDepth, boolean findMax, Stack<M> startPath);
 
 }

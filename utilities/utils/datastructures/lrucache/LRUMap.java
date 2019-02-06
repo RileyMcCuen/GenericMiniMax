@@ -1,4 +1,4 @@
-package utils.datastructures;
+package utils.datastructures.lrucache;
 
 import java.util.AbstractMap;
 import java.util.Set;

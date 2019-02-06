@@ -1,4 +1,4 @@
-package utils.datastructures;
+package utils.datastructures.stack;
 
 public class SinglyLinkedNode<E> {
 

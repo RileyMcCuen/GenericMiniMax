@@ -1,4 +1,4 @@
-package utils.datastructures;
+package utils.datastructures.doublylinkedlist;
 
 public class DoublyLinkedListNode<E> {
 

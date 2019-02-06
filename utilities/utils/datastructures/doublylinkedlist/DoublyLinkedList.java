@@ -1,4 +1,4 @@
-package utils.datastructures;
+package utils.datastructures.doublylinkedlist;
 
 import java.util.Iterator;
 
