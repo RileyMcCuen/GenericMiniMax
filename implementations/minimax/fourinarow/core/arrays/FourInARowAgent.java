@@ -2,7 +2,7 @@ package minimax.fourinarow.core.arrays;
 
 import utils.implementation.EvaluationFunction;
 import utils.implementation.MoveGeneration;
-import utils.implementation.minimax.AbstractMiniMaxAgent;
+import utils.implementation.minimax.notthreadsafe.AbstractMiniMaxAgent;
 
 /**
  * This is the Agent that should be instantiated for a 2D array based Four In A

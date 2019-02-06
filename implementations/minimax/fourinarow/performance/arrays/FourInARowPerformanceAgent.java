@@ -8,7 +8,7 @@ import minimax.fourinarow.core.arrays.FourInARowMoveGeneration;
 import minimax.fourinarow.core.arrays.Piece;
 import utils.implementation.EvaluationFunction;
 import utils.implementation.MoveGeneration;
-import utils.implementation.minimax.AbstractMiniMaxAgent;
+import utils.implementation.minimax.notthreadsafe.AbstractMiniMaxAgent;
 import utils.performance.PerformanceEvaluationFunction;
 import utils.performance.PrintUtilities;
 import utils.performance.TimingUtilities;
@@ -45,7 +45,7 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 					Piece.__EMPTY___, Piece.__EMPTY___ },
 			{ Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___,
 					Piece.__EMPTY___, Piece.__EMPTY___ } };
-	private static FourInARowGameState EMPTY_STATE = new FourInARowGameState(EMPTY_MOVE, EMPTY_BOARD, Piece.PLAYER_ONE,
+	public static FourInARowGameState EMPTY_STATE = new FourInARowGameState(EMPTY_MOVE, EMPTY_BOARD, Piece.PLAYER_ONE,
 			true);
 
 	/**
@@ -66,7 +66,7 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 					Piece.__EMPTY___, Piece.__EMPTY___ },
 			{ Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___, Piece.PLAYER_ONE, Piece.PLAYER_TWO,
 					Piece.__EMPTY___, Piece.__EMPTY___ } };
-	private static FourInARowGameState ALMOST_MIDDLE_WIN_STATE = new FourInARowGameState(ALMOST_MIDDLE_WIN_MOVE,
+	public static FourInARowGameState ALMOST_MIDDLE_WIN_STATE = new FourInARowGameState(ALMOST_MIDDLE_WIN_MOVE,
 			ALMOST_MIDDLE_WIN_BOARD, Piece.PLAYER_ONE, true);
 
 	/**

@@ -2,7 +2,7 @@ package utils.performance;
 
 import utils.implementation.AbstractGameState;
 import utils.implementation.AbstractMove;
-import utils.implementation.minimax.AbstractMiniMaxAgent;
+import utils.implementation.minimax.notthreadsafe.AbstractMiniMaxAgent;
 
 /**
  * 

@@ -1,4 +1,4 @@
-package utils.implementation.minimax;
+package utils.implementation.minimax.notthreadsafe;
 
 import utils.implementation.AbstractMove;
 
