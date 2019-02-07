@@ -2,7 +2,7 @@ package utils.datastructures.stack;
 
 import java.util.Iterator;
 
-import utils.implementation.AbstractMove;
+import utils.implementation.core.AbstractMove;
 
 public class StackIterator<M extends AbstractMove> implements Iterator<M> {
 

@@ -1,4 +1,4 @@
-package minimax.fourinarow.core.arrays;
+package minimax.fourinarow.core.arrays.core;
 
 /**
  * 

@@ -1,32 +1,19 @@
 package minimax.fourinarow.performance.arrays;
 
-import minimax.fourinarow.core.arrays.FourInARowAgent;
+import minimax.fourinarow.core.arrays.FourInARowMoveGenerationWithPV;
+import minimax.fourinarow.core.arrays.FourInARowThreadSafePVAgent;
 import minimax.fourinarow.core.arrays.core.FourInARowEvaluationFunction;
 import minimax.fourinarow.core.arrays.core.FourInARowGameState;
 import minimax.fourinarow.core.arrays.core.FourInARowMove;
-import minimax.fourinarow.core.arrays.core.FourInARowMoveGeneration;
 import minimax.fourinarow.core.arrays.core.Piece;
+import utils.datastructures.stack.Stack;
 import utils.implementation.core.EvaluationFunction;
-import utils.implementation.core.MoveGeneration;
-import utils.implementation.minimax.notthreadsafe.AbstractMiniMaxAgent;
+import utils.implementation.minimax.threadsafepv.MoveGenerationWithPV;
 import utils.performance.PerformanceEvaluationFunction;
 import utils.performance.PrintUtilities;
 import utils.performance.TimingUtilities;
 
-/**
- * This Agent is used to count the number of boards that are evaluated at
- * various depths and can be useful to compare evaluation functions. Also can be
- * used to time searches by running the main method.
- * 
- * NOTE: Would not recommend attempting depths more than 15 with this algorithm.
- * It will likely take several hours or for extreme depths an impossible amount
- * of time to ever finish.
- * 
- * @author Riley McCuen
- *
- */
-@SuppressWarnings("unused")
-public class FourInARowPerformanceAgent extends FourInARowAgent {
+public class FourInARowThreadSafePVPerformanceAgent extends FourInARowThreadSafePVAgent {
 
 	/**
 	 * Start state of any FourInARowGame to attempt a fresh search of the tree.
@@ -76,13 +63,13 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 	private static int MAX_DEPTH = 40;
 	private static int MIN_DEPTH = 0;
 
-	public FourInARowPerformanceAgent(FourInARowGameState gameState,
+	public FourInARowThreadSafePVPerformanceAgent(FourInARowGameState gameState,
 			EvaluationFunction<FourInARowGameState> evaluator) {
-		super(gameState, new FourInARowMoveGeneration(), evaluator);
+		super(gameState, new FourInARowMoveGenerationWithPV(), evaluator);
 	}
 
-	public FourInARowPerformanceAgent(FourInARowGameState gameState,
-			MoveGeneration<FourInARowMove, FourInARowGameState> moveGenerator) {
+	public FourInARowThreadSafePVPerformanceAgent(FourInARowGameState gameState,
+			MoveGenerationWithPV<FourInARowMove, FourInARowGameState> moveGenerator) {
 		super(gameState, moveGenerator, new FourInARowEvaluationFunction());
 	}
 
@@ -96,13 +83,12 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 	public static void main(String[] args) throws InterruptedException {
 		PerformanceEvaluationFunction<FourInARowGameState> evaluator = new PerformanceEvaluationFunction<FourInARowGameState>(
 				new FourInARowEvaluationFunction());
-		FourInARowAgent tester = new FourInARowPerformanceAgent(EMPTY_STATE.deepCopy(true), evaluator);
-		TimingUtilities<FourInARowMove, FourInARowGameState> timer = new TimingUtilities<FourInARowMove, FourInARowGameState>();
-		evaluator.resetCounter();
-		long time = timer.averageTimedEvaluationIterativeMultipleDepths(1, tester, 2, 12, true);
+		FourInARowThreadSafePVPerformanceAgent tester = new FourInARowThreadSafePVPerformanceAgent(
+				EMPTY_STATE.deepCopy(true), evaluator);
+		long time = System.nanoTime();
+		tester.iterativeSearchWithPV(2, 12, true, new Stack<FourInARowMove>(), 100);
+		time = System.nanoTime() - time;
 		PrintUtilities.printWithWords(15, time, evaluator.getCounterString());
 		System.out.println(tester.getBestMove().toString());
-		System.exit(0);
 	}
-
 }

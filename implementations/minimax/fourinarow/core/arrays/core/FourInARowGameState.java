@@ -1,8 +1,8 @@
-package minimax.fourinarow.core.arrays;
+package minimax.fourinarow.core.arrays.core;
 
 import java.util.Arrays;
 
-import utils.implementation.AbstractGameState;
+import utils.implementation.core.AbstractGameState;
 
 /**
  * 

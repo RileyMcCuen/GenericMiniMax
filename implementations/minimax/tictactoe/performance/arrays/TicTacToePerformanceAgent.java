@@ -1,10 +1,10 @@
 package minimax.tictactoe.performance.arrays;
 
-import utils.implementation.EvaluationFunction;
+import utils.implementation.core.EvaluationFunction;
 import utils.performance.PerformanceEvaluationFunction;
 import utils.performance.PrintUtilities;
 import utils.performance.TimingUtilities;
-import minimax.fourinarow.core.arrays.Piece;
+import minimax.fourinarow.core.arrays.core.Piece;
 import minimax.tictactoe.core.arrays.TicTacToeEvaluationFunction;
 import minimax.tictactoe.core.arrays.TicTacToeMove;
 import minimax.tictactoe.core.arrays.TicTacToeGameState;

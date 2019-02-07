@@ -1,6 +1,6 @@
 package minimax.tictactoe.core.arrays;
 
-import utils.implementation.AbstractMove;
+import utils.implementation.core.AbstractMove;
 
 /**
  * The standard move implementation for Tic Tac Toe.

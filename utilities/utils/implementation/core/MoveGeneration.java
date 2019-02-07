@@ -1,4 +1,4 @@
-package utils.implementation;
+package utils.implementation.core;
 
 /**
  * Represents a call-able move-generation function that an Agent needs to create

@@ -1,6 +1,6 @@
 package utils.implementation.minimax.notthreadsafe;
 
-import utils.implementation.AbstractMove;
+import utils.implementation.core.AbstractMove;
 
 /**
  * 

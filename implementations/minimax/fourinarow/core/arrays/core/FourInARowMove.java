@@ -1,6 +1,6 @@
-package minimax.fourinarow.core.arrays;
+package minimax.fourinarow.core.arrays.core;
 
-import utils.implementation.AbstractMove;
+import utils.implementation.core.AbstractMove;
 
 /**
  * 

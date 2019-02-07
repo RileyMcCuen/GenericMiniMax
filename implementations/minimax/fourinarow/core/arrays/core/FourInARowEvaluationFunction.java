@@ -1,6 +1,6 @@
-package minimax.fourinarow.core.arrays;
+package minimax.fourinarow.core.arrays.core;
 
-import utils.implementation.EvaluationFunction;
+import utils.implementation.core.EvaluationFunction;
 
 /**
  * 

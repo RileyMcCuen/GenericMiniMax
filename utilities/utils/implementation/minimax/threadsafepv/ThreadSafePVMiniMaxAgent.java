@@ -1,8 +1,8 @@
 package utils.implementation.minimax.threadsafepv;
 
 import utils.datastructures.stack.Stack;
-import utils.implementation.AbstractGameState;
-import utils.implementation.AbstractMove;
+import utils.implementation.core.AbstractGameState;
+import utils.implementation.core.AbstractMove;
 
 /**
  * An implementing Agent will be thread safe. This implementation requires that
@@ -29,11 +29,13 @@ import utils.implementation.AbstractMove;
 public interface ThreadSafePVMiniMaxAgent<M extends AbstractMove, G extends AbstractGameState<M>> {
 
 	/**
-	 * This method is called by the other two methods that do iterative deepening.
-	 * It performs a single depth search. Can throw an InterruptedException.
+	 * This method is called by iterativeSearchWithPV(). It performs a single depth
+	 * search. Can throw an InterruptedException which should be caught by
+	 * iterativeSearchWithPV().
 	 * 
-	 * @param depth   - the depth to search until.
-	 * @param findMax - whether to call findMax() first or not.
+	 * @param depth     - the depth to search until.
+	 * @param findMax   - whether to call findMax() first or not.
+	 * @param startPath - the last best path found.
 	 * @return - best move path found.
 	 * @throws InterruptedException - if the seach runs out of time this should be
 	 *                              propagated out to the iterative deepening search
@@ -44,13 +46,21 @@ public interface ThreadSafePVMiniMaxAgent<M extends AbstractMove, G extends Abst
 	/**
 	 * Search that returns a collection of moves from the best path that has been
 	 * found. It uses an initial collection as the beginning path for its search.
+	 * When an InterruptedException is caught in this method it should be caught and
+	 * the search should end.
 	 * 
-	 * @param minDepth - minimum depth to start iterative deepening from.
-	 * @param maxDepth - the deepest depth that iterative deepening will search to.
-	 * @param findMax  - whether to call findMax() first or not.
-	 * @param path     - the last best path found
-	 * @return - best move path found.
+	 * @param minDepth  - minimum depth to start iterative deepening from.
+	 * @param maxDepth  - the deepest depth that iterative deepening will search to.
+	 * @param findMax   - whether to call findMax() first or not.
+	 * @param startPath - the last best path found
+	 * @param time      - the amount of time to allow the search to run. This does
+	 *                  not include the amount of time to start and stop the search.
+	 *                  Depending on the complexity of your implementations this can
+	 *                  take up to a tenth of a second or more. If this is a concern
+	 *                  give a slightly smaller amount of time than allowed to
+	 *                  guarantee a finish.
+	 * @return - best move found.
 	 */
-	public Stack<M> iterativeSearchWithPV(int minDepth, int maxDepth, boolean findMax, Stack<M> startPath);
+	public M iterativeSearchWithPV(int minDepth, int maxDepth, boolean findMax, Stack<M> startPath, long time);
 
 }

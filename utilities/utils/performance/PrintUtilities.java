@@ -21,7 +21,7 @@ public class PrintUtilities {
 	 */
 	public static void printWithWords(int depth, long average, String evaluatorString) {
 		System.out.println(
-				"Depth: " + depth + ", Time: " + ((double) average / 100000000.0) + " seconds, " + evaluatorString);
+				"Depth: " + depth + ", Time: " + ((double) average / 1000000000.0) + " seconds, " + evaluatorString);
 	}
 
 	/**

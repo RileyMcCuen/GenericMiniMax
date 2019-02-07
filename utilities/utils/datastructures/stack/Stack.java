@@ -2,7 +2,7 @@ package utils.datastructures.stack;
 
 import java.util.Iterator;
 
-import utils.implementation.AbstractMove;
+import utils.implementation.core.AbstractMove;
 
 /**
  * Bare-bones stack data structure. Used to store move paths from previous
@@ -24,15 +24,25 @@ public class Stack<M extends AbstractMove> implements Iterable<M> {
 		this.top = top;
 	}
 
+	public Stack(M top) {
+		this.top = new SinglyLinkedNode<M>(top);
+	}
+
 	public boolean isEmpty() {
 		return top == null;
 	}
 
 	public M popMove() {
+		if (isEmpty()) {
+			return null;
+		}
 		return popNode().getValue();
 	}
 
 	public SinglyLinkedNode<M> popNode() {
+		if (isEmpty()) {
+			return null;
+		}
 		SinglyLinkedNode<M> oldTop = top;
 		top = top.getNext();
 		oldTop.setNext(null);
@@ -40,6 +50,9 @@ public class Stack<M extends AbstractMove> implements Iterable<M> {
 	}
 
 	public M peekMove() {
+		if (isEmpty()) {
+			return null;
+		}
 		return peekNode().getValue();
 	}
 
@@ -57,6 +70,9 @@ public class Stack<M extends AbstractMove> implements Iterable<M> {
 	}
 
 	public void swapStack(Stack<M> stack) {
+		if (stack.isEmpty()) {
+			return;
+		}
 		top = stack.peekNode();
 	}
 

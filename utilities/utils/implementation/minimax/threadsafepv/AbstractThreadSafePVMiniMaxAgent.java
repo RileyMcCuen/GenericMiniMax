@@ -1,26 +1,21 @@
 package utils.implementation.minimax.threadsafepv;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import utils.datastructures.stack.Stack;
-import utils.implementation.AbstractGameState;
-import utils.implementation.AbstractMove;
-import utils.implementation.EvaluationFunction;
+import utils.implementation.core.AbstractGameState;
+import utils.implementation.core.AbstractMove;
+import utils.implementation.core.EvaluationFunction;
 
 public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G extends AbstractGameState<M>>
 		implements ThreadSafePVMiniMaxAgent<M, G> {
 	public static final int MINIMUM_DEPTH = 0;
 	public static final int ALPHA_BEGINNING_VALUE = Integer.MIN_VALUE;
 	public static final int BETA_BEGINNING_VALUE = Integer.MAX_VALUE;
-	public static final long DEFAULT_DELAYMS = 5000;
+	public static final long DEFAULT_SEARCH_TIME_MS = 5000;
 
 	protected G gameState;
 	protected MoveGenerationWithPV<M, G> moveGenerator;
 	protected EvaluationFunction<G> evaluator;
-	protected M bestMove = null;
-	protected int maxDepth = 0;
-	protected final ExecutorService xs = Executors.newSingleThreadScheduledExecutor();
+	protected Stack<M> bestPath = null;
 
 	/**
 	 * These values are passed to the evaluation function and if an evaluation is
@@ -102,7 +97,7 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 	 *         return null.
 	 */
 	public M getBestMove() {
-		return bestMove;
+		return bestPath.peekMove();
 	}
 
 	/**
@@ -146,7 +141,7 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 		if (shouldEndSearch(depth, evaluation)) {
 			return evaluation;
 		}
-		Stack<M> bestStack = null;
+		Stack<M> bestStack = new Stack<M>();
 		for (M move : getMoves(startPath.popMove())) {
 			Stack<M> passStack = new Stack<M>();
 			makeMove(move);
@@ -184,9 +179,9 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 		if (shouldEndSearch(depth, evaluation)) {
 			return evaluation;
 		}
-		Stack<M> bestStack = null;
+		Stack<M> bestStack = new Stack<M>();
 		for (M move : getMoves(startPath.popMove())) {
-			Stack<M> passStack = new Stack<M>();
+			Stack<M> passStack = new Stack<M>(move);
 			makeMove(move);
 			move.setValue(findMin((G) gameState.deepCopy(true), passStack, startPath, depth - 1, alpha, beta));
 			undoMove(move);
@@ -208,20 +203,37 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 		if (Thread.currentThread().isInterrupted()) {
 			throw new InterruptedException();
 		}
-		Stack<M> bestMovePath = new Stack<M>();
+		Stack<M> bestPath = new Stack<M>();
 		G copyOfGameState = (G) gameState.deepCopy(true);
 		if (findMax) {
-			findMax(copyOfGameState, bestMovePath, startPath, depth, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
+			findMax(copyOfGameState, bestPath, startPath, depth, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
 		} else {
-			findMin(copyOfGameState, bestMovePath, startPath, depth, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
+			findMin(copyOfGameState, bestPath, startPath, depth, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
 		}
-		return bestMovePath;
+		return bestPath;
 	}
 
 	@Override
-	public Stack<M> iterativeSearchWithPV(int minDepth, int maxDepth, boolean findMax, Stack<M> startPath) {
-		// TODO Auto-generated method stub
-		return null;
+	public M iterativeSearchWithPV(int minDepth, int maxDepth, boolean findMax, Stack<M> startPath, long time) {
+		System.out.println("enter iterative");
+		RunnableSearch<M, G> runnableSearch = new RunnableSearch<M, G>(startPath, minDepth, maxDepth, findMax, this);
+		Thread thread = new Thread(runnableSearch);
+		try {
+			System.out.println("trying");
+			thread.run();
+			System.out.println("running");
+			thread.join(time);
+			System.out.println("joined");
+			if (thread.isAlive()) {
+				thread.interrupt();
+				System.out.println("interrupted");
+			}
+			System.out.println("out of if");
+		} catch (InterruptedException e) {
+			System.out.println("message " + e.getMessage());
+		}
+		bestPath = runnableSearch.getBestPath();
+		return getBestMove();
 	}
 
 	/**

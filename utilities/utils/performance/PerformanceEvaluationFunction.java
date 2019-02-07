@@ -1,7 +1,7 @@
 package utils.performance;
 
-import utils.implementation.AbstractGameState;
-import utils.implementation.EvaluationFunction;
+import utils.implementation.core.AbstractGameState;
+import utils.implementation.core.EvaluationFunction;
 
 /**
  * 

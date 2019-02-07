@@ -1,8 +1,8 @@
-package minimax.fourinarow.core.arrays;
+package minimax.fourinarow.core.arrays.core;
 
 import java.util.LinkedList;
 
-import utils.implementation.MoveGeneration;
+import utils.implementation.core.MoveGeneration;
 
 /**
  * 

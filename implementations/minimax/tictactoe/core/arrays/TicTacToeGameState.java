@@ -1,10 +1,9 @@
 package minimax.tictactoe.core.arrays;
 
-import utils.implementation.AbstractGameState;
-
 import java.util.Arrays;
 
-import minimax.fourinarow.core.arrays.Piece;
+import minimax.fourinarow.core.arrays.core.Piece;
+import utils.implementation.core.AbstractGameState;
 
 /**
  * Tic Tac Toe game-state. Reuses the Piece enumeration from Four In A Row.

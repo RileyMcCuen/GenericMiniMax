@@ -1,7 +1,11 @@
 package minimax.fourinarow.core.arrays;
 
-import utils.implementation.EvaluationFunction;
-import utils.implementation.MoveGeneration;
+import minimax.fourinarow.core.arrays.core.FourInARowEvaluationFunction;
+import minimax.fourinarow.core.arrays.core.FourInARowGameState;
+import minimax.fourinarow.core.arrays.core.FourInARowMove;
+import minimax.fourinarow.core.arrays.core.FourInARowMoveGeneration;
+import utils.implementation.core.EvaluationFunction;
+import utils.implementation.core.MoveGeneration;
 import utils.implementation.minimax.notthreadsafe.AbstractMiniMaxAgent;
 
 /**
@@ -31,7 +35,7 @@ public class FourInARowAgent extends AbstractMiniMaxAgent<FourInARowMove, FourIn
 	}
 
 	/**
-	 * If the depth is trying to go beyond the maximumm number of turns in the game
+	 * If the depth is trying to go beyond the maximum number of turns in the game
 	 * then it is reduced to the maximum depth left in the game.
 	 */
 	@Override
@@ -43,7 +47,7 @@ public class FourInARowAgent extends AbstractMiniMaxAgent<FourInARowMove, FourIn
 	}
 
 	/**
-	 * If the depth is trying to go beyond the maximumm number of turns in the game
+	 * If the depth is trying to go beyond the maximum number of turns in the game
 	 * then it is reduced to the maximum depth left in the game.
 	 */
 	@Override

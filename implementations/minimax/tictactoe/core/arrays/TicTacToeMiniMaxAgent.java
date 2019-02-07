@@ -1,7 +1,7 @@
 package minimax.tictactoe.core.arrays;
 
-import utils.implementation.EvaluationFunction;
-import utils.implementation.MoveGeneration;
+import utils.implementation.core.EvaluationFunction;
+import utils.implementation.core.MoveGeneration;
 import utils.implementation.minimax.notthreadsafe.AbstractMiniMaxAgent;
 
 public class TicTacToeMiniMaxAgent extends AbstractMiniMaxAgent<TicTacToeMove, TicTacToeGameState> {

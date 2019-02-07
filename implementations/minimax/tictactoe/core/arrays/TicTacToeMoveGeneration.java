@@ -2,8 +2,8 @@ package minimax.tictactoe.core.arrays;
 
 import java.util.LinkedList;
 
-import minimax.fourinarow.core.arrays.Piece;
-import utils.implementation.MoveGeneration;
+import minimax.fourinarow.core.arrays.core.Piece;
+import utils.implementation.core.MoveGeneration;
 
 /**
  * The standard move generation function for Tic Tac Toe.

@@ -1,7 +1,8 @@
-package utils.datastructures;
+package utils.datastructures.testing;
 
 import java.util.Stack;
-import minimax.fourinarow.core.arrays.FourInARowMove;
+
+import minimax.fourinarow.core.arrays.core.FourInARowMove;
 
 public class MainDataStructuresPerformanceTesting {
 

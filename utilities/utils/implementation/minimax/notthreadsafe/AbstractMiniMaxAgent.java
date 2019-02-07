@@ -8,10 +8,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import utils.implementation.AbstractGameState;
-import utils.implementation.AbstractMove;
-import utils.implementation.EvaluationFunction;
-import utils.implementation.MoveGeneration;
+import utils.implementation.core.AbstractGameState;
+import utils.implementation.core.AbstractMove;
+import utils.implementation.core.EvaluationFunction;
+import utils.implementation.core.MoveGeneration;
 
 /**
  * 

@@ -1,8 +1,8 @@
 package utils.implementation.minimax.threadsafepv;
 
 import utils.datastructures.stack.Stack;
-import utils.implementation.AbstractGameState;
-import utils.implementation.AbstractMove;
+import utils.implementation.core.AbstractGameState;
+import utils.implementation.core.AbstractMove;
 
 /**
  * Represents a call-able move-generation function that an Agent needs to create

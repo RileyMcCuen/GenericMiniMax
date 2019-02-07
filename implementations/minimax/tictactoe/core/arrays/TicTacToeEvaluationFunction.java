@@ -1,7 +1,7 @@
 package minimax.tictactoe.core.arrays;
 
-import minimax.fourinarow.core.arrays.Piece;
-import utils.implementation.EvaluationFunction;
+import minimax.fourinarow.core.arrays.core.Piece;
+import utils.implementation.core.EvaluationFunction;
 
 /**
  * Perfect evaluation function for Tic Tac Toe.

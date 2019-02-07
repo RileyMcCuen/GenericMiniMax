@@ -2,10 +2,10 @@ package utils.datastructures.doublylinkedlist;
 
 import java.util.Iterator;
 
-import minimax.fourinarow.core.arrays.FourInARowGameState;
-import minimax.fourinarow.core.arrays.FourInARowMove;
+import minimax.fourinarow.core.arrays.core.FourInARowGameState;
+import minimax.fourinarow.core.arrays.core.FourInARowMove;
 import minimax.fourinarow.performance.arrays.FourInARowPerformanceAgent;
-import utils.implementation.AbstractGameState;
+import utils.implementation.core.AbstractGameState;
 
 /**
  * Bare-bones implementation of doubly linked list with better node manipulation
