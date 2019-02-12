@@ -86,9 +86,12 @@ public class FourInARowThreadSafePVPerformanceAgent extends FourInARowThreadSafe
 		FourInARowThreadSafePVPerformanceAgent tester = new FourInARowThreadSafePVPerformanceAgent(
 				EMPTY_STATE.deepCopy(true), evaluator);
 		long time = System.nanoTime();
-		tester.iterativeSearchWithPV(2, 12, true, new Stack<FourInARowMove>(), 100);
+		tester.iterativeSearchWithPV(2, 15, true, new Stack<FourInARowMove>(), 100000);
 		time = System.nanoTime() - time;
 		PrintUtilities.printWithWords(15, time, evaluator.getCounterString());
 		System.out.println(tester.getBestMove().toString());
+		for (FourInARowMove m : tester.bestPath) {
+			System.out.println(m.toString());
+		}
 	}
 }

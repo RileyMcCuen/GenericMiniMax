@@ -70,10 +70,11 @@ public class Stack<M extends AbstractMove> implements Iterable<M> {
 	}
 
 	public void swapStack(Stack<M> stack) {
-		if (stack.isEmpty()) {
-			return;
+		if (isEmpty()) {
+			top = stack.peekNode();
+		} else {
+			top.setNext(stack.peekNode());
 		}
-		top = stack.peekNode();
 	}
 
 	@Override

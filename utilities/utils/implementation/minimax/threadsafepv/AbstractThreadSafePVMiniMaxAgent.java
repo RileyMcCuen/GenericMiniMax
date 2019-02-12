@@ -1,5 +1,13 @@
 package utils.implementation.minimax.threadsafepv;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import utils.datastructures.stack.Stack;
 import utils.implementation.core.AbstractGameState;
 import utils.implementation.core.AbstractMove;
@@ -15,6 +23,7 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 	protected G gameState;
 	protected MoveGenerationWithPV<M, G> moveGenerator;
 	protected EvaluationFunction<G> evaluator;
+	protected final ExecutorService xs = Executors.newSingleThreadScheduledExecutor();
 	protected Stack<M> bestPath = null;
 
 	/**
@@ -141,7 +150,7 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 		if (shouldEndSearch(depth, evaluation)) {
 			return evaluation;
 		}
-		Stack<M> bestStack = new Stack<M>();
+		Stack<M> bestStack = null;
 		for (M move : getMoves(startPath.popMove())) {
 			Stack<M> passStack = new Stack<M>();
 			makeMove(move);
@@ -179,7 +188,7 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 		if (shouldEndSearch(depth, evaluation)) {
 			return evaluation;
 		}
-		Stack<M> bestStack = new Stack<M>();
+		Stack<M> bestStack = null;
 		for (M move : getMoves(startPath.popMove())) {
 			Stack<M> passStack = new Stack<M>(move);
 			makeMove(move);
@@ -215,24 +224,28 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 
 	@Override
 	public M iterativeSearchWithPV(int minDepth, int maxDepth, boolean findMax, Stack<M> startPath, long time) {
-		System.out.println("enter iterative");
-		RunnableSearch<M, G> runnableSearch = new RunnableSearch<M, G>(startPath, minDepth, maxDepth, findMax, this);
-		Thread thread = new Thread(runnableSearch);
-		try {
-			System.out.println("trying");
-			thread.run();
-			System.out.println("running");
-			thread.join(time);
-			System.out.println("joined");
-			if (thread.isAlive()) {
-				thread.interrupt();
-				System.out.println("interrupted");
+		long timeLeft = time;
+		int depth = minDepth;
+		while(depth++ <= maxDepth) {
+			int _depth = depth;
+			long startTime = System.nanoTime();
+			Callable<Stack<M>> search = new Callable<Stack<M>>() {
+				
+				@Override
+				public Stack<M> call() throws Exception {
+					return searchWithPV(_depth, findMax, startPath);
+				}
+				
+			};
+			Future<Stack<M>> searchResult = xs.submit(search);
+			try {
+				bestPath = searchResult.get(timeLeft, TimeUnit.MILLISECONDS);
+				timeLeft -= (System.nanoTime() - startTime);
+			} catch (InterruptedException | ExecutionException | TimeoutException e) {
+				e.printStackTrace();
+				return getBestMove();
 			}
-			System.out.println("out of if");
-		} catch (InterruptedException e) {
-			System.out.println("message " + e.getMessage());
 		}
-		bestPath = runnableSearch.getBestPath();
 		return getBestMove();
 	}
 
