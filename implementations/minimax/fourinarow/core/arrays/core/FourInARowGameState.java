@@ -70,11 +70,6 @@ public class FourInARowGameState extends AbstractGameState<FourInARowMove> {
 		return copy;
 	}
 
-	@Override
-	public FourInARowGameState deepCopy(boolean externallyMutable) {
-		return new FourInARowGameState(plyNumber, board, currentPlayer, nextOpenRowInColumns, externallyMutable);
-	}
-
 	/**
 	 * If this is externally mutable then a reference to this game-state's board is
 	 * returned directly otherwise a copy is made and returned.
@@ -115,6 +110,11 @@ public class FourInARowGameState extends AbstractGameState<FourInARowMove> {
 	 */
 	public int getNextOpenRowInColumn(int column) {
 		return nextOpenRowInColumns[column];
+	}
+	
+	@Override
+	public FourInARowGameState deepCopy(boolean externallyMutable) {
+		return new FourInARowGameState(this.getPlyNumber(), this.getBoard(), this.getCurrentPlayer(), this.getNextOpenRowInColumns(), externallyMutable);
 	}
 
 	/**

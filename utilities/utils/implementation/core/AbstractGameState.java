@@ -38,6 +38,16 @@ public abstract class AbstractGameState<M extends AbstractMove> extends Object {
 	public int getPlyNumber() {
 		return this.plyNumber;
 	}
+	
+	/**
+	 * Should be called when a game-state needs to be completely replicated and
+	 * should replicate all vital aspects of the game-state. This method should be
+	 * called with "externallyMutable = true" when asking the Agent to make a search.
+	 * 
+	 * @param externallyMutable - whether or not this game-state is externally mutable.
+	 */
+	
+	public abstract AbstractGameState<M> deepCopy(boolean externallyMutable);
 
 	/**
 	 * 
@@ -58,16 +68,6 @@ public abstract class AbstractGameState<M extends AbstractMove> extends Object {
 	 * 
 	 */
 	public abstract void undoMove(M move);
-
-	/**
-	 * Should be called when a game-state needs to be completely replicated and
-	 * should replicate all vital aspects of the game-state. This method should be
-	 * called with "externallyMutable = true" when asking the Agent to make a search.
-	 * 
-	 * @param externallyMutable - whether or not this game-state is externally mutable.
-	 * @return - an exact copy of this game-state
-	 */
-	public abstract AbstractGameState<M> deepCopy(boolean externallyMutable);
 
 	/**
 	 * Can be used for move ordering look-up and transposition tables if the Agent
