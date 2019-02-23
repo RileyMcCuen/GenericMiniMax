@@ -1,7 +1,5 @@
-package minimax.fourinarow.core.arrays;
+package minimax.fourinarow.core.arrays.core;
 
-import minimax.fourinarow.core.arrays.core.FourInARowGameState;
-import minimax.fourinarow.core.arrays.core.FourInARowMove;
 import utils.datastructures.stack.Stack;
 import utils.implementation.minimax.threadsafepv.MoveGenerationWithPV;
 

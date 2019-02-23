@@ -29,8 +29,8 @@ public class FourInARowGameState extends AbstractGameState<FourInARowMove> {
 	 */
 	private int[] nextOpenRowInColumns;
 
-	public FourInARowGameState(int plyNumber, Piece[][] board, Piece currentPlayer, boolean externallyMutable) {
-		super(plyNumber, externallyMutable);
+	public FourInARowGameState(int plyNumber, Piece[][] board, Piece currentPlayer) {
+		super(plyNumber);
 		this.board = board;
 		this.currentPlayer = currentPlayer;
 		this.nextOpenRowInColumns = new int[COLUMNS];
@@ -39,17 +39,13 @@ public class FourInARowGameState extends AbstractGameState<FourInARowMove> {
 
 	/**
 	 * 
-	 * Private constructor used in deepCopy().
-	 * 
 	 * @param plyNumber
 	 * @param board
 	 * @param currentPlayer
 	 * @param nextOpenRowInColumns
-	 * @param externallyMutable
 	 */
-	private FourInARowGameState(int plyNumber, Piece[][] board, Piece currentPlayer, int[] nextOpenRowInColumns,
-			boolean externallyMutable) {
-		super(plyNumber, externallyMutable);
+	public FourInARowGameState(int plyNumber, Piece[][] board, Piece currentPlayer, int[] nextOpenRowInColumns) {
+		super(plyNumber);
 		this.board = copyBoard(board);
 		this.currentPlayer = currentPlayer;
 		this.nextOpenRowInColumns = Arrays.copyOf(nextOpenRowInColumns, COLUMNS);
@@ -77,11 +73,7 @@ public class FourInARowGameState extends AbstractGameState<FourInARowMove> {
 	 * @return - either reference or copy of current game board.
 	 */
 	public Piece[][] getBoard() {
-		if (externallyMutable) {
-			return board;
-		} else {
-			return copyBoard(board);
-		}
+		return copyBoard(board);
 	}
 
 	public Piece getCurrentPlayer() {
@@ -96,11 +88,7 @@ public class FourInARowGameState extends AbstractGameState<FourInARowMove> {
 	 *         column.
 	 */
 	public int[] getNextOpenRowInColumns() {
-		if (externallyMutable) {
-			return nextOpenRowInColumns;
-		} else {
-			return Arrays.copyOf(nextOpenRowInColumns, COLUMNS);
-		}
+		return Arrays.copyOf(nextOpenRowInColumns, COLUMNS);
 	}
 
 	/**
@@ -110,11 +98,6 @@ public class FourInARowGameState extends AbstractGameState<FourInARowMove> {
 	 */
 	public int getNextOpenRowInColumn(int column) {
 		return nextOpenRowInColumns[column];
-	}
-	
-	@Override
-	public FourInARowGameState deepCopy(boolean externallyMutable) {
-		return new FourInARowGameState(this.getPlyNumber(), this.getBoard(), this.getCurrentPlayer(), this.getNextOpenRowInColumns(), externallyMutable);
 	}
 
 	/**

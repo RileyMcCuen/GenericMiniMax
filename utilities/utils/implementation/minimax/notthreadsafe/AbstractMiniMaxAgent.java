@@ -300,7 +300,8 @@ public abstract class AbstractMiniMaxAgent<M extends AbstractMove, G extends Abs
 	@Override
 	public M searchIterativeDeepening(int minDepth, int maxDepth, boolean findMax, long time) {
 		Callable<M> iterativeSearch = new Callable<M>() {
-
+			long startTime = System.currentTimeMillis();
+			long timeLeft = 0;
 			@Override
 			public M call() throws Exception {
 				M bestMoveSoFar = null;
@@ -308,6 +309,7 @@ public abstract class AbstractMiniMaxAgent<M extends AbstractMove, G extends Abs
 					try {
 						M deeperMove = searchInterruptable(depth, findMax);
 						bestMoveSoFar = deeperMove;
+						timeLeft = (DEFAULT_DELAYMS - (System.currentTimeMillis() - startTime));
 					} catch (InterruptedException e) {
 						return bestMoveSoFar;
 					}

@@ -1,10 +1,11 @@
 package minimax.fourinarow.performance.arrays;
 
-import minimax.fourinarow.core.arrays.FourInARowMoveGenerationWithPV;
-import minimax.fourinarow.core.arrays.FourInARowThreadSafePVAgent;
+import minimax.fourinarow.core.arrays.agents.FourInARowThreadSafePVAgent;
+import minimax.fourinarow.core.arrays.core.FourInARowDeepCopier;
 import minimax.fourinarow.core.arrays.core.FourInARowEvaluationFunction;
 import minimax.fourinarow.core.arrays.core.FourInARowGameState;
 import minimax.fourinarow.core.arrays.core.FourInARowMove;
+import minimax.fourinarow.core.arrays.core.FourInARowMoveGenerationWithPV;
 import minimax.fourinarow.core.arrays.core.Piece;
 import utils.datastructures.stack.Stack;
 import utils.implementation.core.EvaluationFunction;
@@ -32,8 +33,7 @@ public class FourInARowThreadSafePVPerformanceAgent extends FourInARowThreadSafe
 					Piece.__EMPTY___, Piece.__EMPTY___ },
 			{ Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___,
 					Piece.__EMPTY___, Piece.__EMPTY___ } };
-	public static FourInARowGameState EMPTY_STATE = new FourInARowGameState(EMPTY_MOVE, EMPTY_BOARD, Piece.PLAYER_ONE,
-			true);
+	public static FourInARowGameState EMPTY_STATE = new FourInARowGameState(EMPTY_MOVE, EMPTY_BOARD, Piece.PLAYER_ONE);
 
 	/**
 	 * Easy win state of FourInARowGame to attempt see how quickly the Agent will
@@ -54,7 +54,7 @@ public class FourInARowThreadSafePVPerformanceAgent extends FourInARowThreadSafe
 			{ Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___, Piece.PLAYER_ONE, Piece.PLAYER_TWO,
 					Piece.__EMPTY___, Piece.__EMPTY___ } };
 	public static FourInARowGameState ALMOST_MIDDLE_WIN_STATE = new FourInARowGameState(ALMOST_MIDDLE_WIN_MOVE,
-			ALMOST_MIDDLE_WIN_BOARD, Piece.PLAYER_ONE, true);
+			ALMOST_MIDDLE_WIN_BOARD, Piece.PLAYER_ONE);
 
 	/**
 	 * Number of iterations used in timing runs.
@@ -65,12 +65,12 @@ public class FourInARowThreadSafePVPerformanceAgent extends FourInARowThreadSafe
 
 	public FourInARowThreadSafePVPerformanceAgent(FourInARowGameState gameState,
 			EvaluationFunction<FourInARowGameState> evaluator) {
-		super(gameState, new FourInARowMoveGenerationWithPV(), evaluator);
+		super(gameState, new FourInARowDeepCopier(), new FourInARowMoveGenerationWithPV(), evaluator);
 	}
 
 	public FourInARowThreadSafePVPerformanceAgent(FourInARowGameState gameState,
 			MoveGenerationWithPV<FourInARowMove, FourInARowGameState> moveGenerator) {
-		super(gameState, moveGenerator, new FourInARowEvaluationFunction());
+		super(gameState, new FourInARowDeepCopier(), moveGenerator, new FourInARowEvaluationFunction());
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class FourInARowThreadSafePVPerformanceAgent extends FourInARowThreadSafe
 		PerformanceEvaluationFunction<FourInARowGameState> evaluator = new PerformanceEvaluationFunction<FourInARowGameState>(
 				new FourInARowEvaluationFunction());
 		FourInARowThreadSafePVPerformanceAgent tester = new FourInARowThreadSafePVPerformanceAgent(
-				EMPTY_STATE.deepCopy(true), evaluator);
+				EMPTY_STATE, evaluator);
 		long time = System.nanoTime();
 		tester.iterativeSearchWithPV(2, 15, true, new Stack<FourInARowMove>(), 100000);
 		time = System.nanoTime() - time;

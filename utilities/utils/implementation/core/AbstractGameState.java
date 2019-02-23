@@ -20,34 +20,13 @@ public abstract class AbstractGameState<M extends AbstractMove> extends Object {
 	 */
 	protected int plyNumber;
 
-	/**
-	 * Whether or not this game-state is externally mutable. The game-state of the
-	 * actual game implementation should not be mutable because this would allow the
-	 * game-state to give out a references to its own mutable objects. The
-	 * game-state given to an Agent should be a mutable copy of the current
-	 * game-state. If it is not mutable the Agent will have to make many unneeded
-	 * copies of data severely hurting performance.
-	 */
-	protected final boolean externallyMutable;
-
-	public AbstractGameState(int plyNumber, boolean externallyMutable) {
-		this.externallyMutable = externallyMutable;
+	public AbstractGameState(int plyNumber) {
 		this.plyNumber = plyNumber;
 	}
 
 	public int getPlyNumber() {
 		return this.plyNumber;
 	}
-	
-	/**
-	 * Should be called when a game-state needs to be completely replicated and
-	 * should replicate all vital aspects of the game-state. This method should be
-	 * called with "externallyMutable = true" when asking the Agent to make a search.
-	 * 
-	 * @param externallyMutable - whether or not this game-state is externally mutable.
-	 */
-	
-	public abstract AbstractGameState<M> deepCopy(boolean externallyMutable);
 
 	/**
 	 * 

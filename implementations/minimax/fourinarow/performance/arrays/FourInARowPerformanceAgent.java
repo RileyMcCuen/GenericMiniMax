@@ -1,6 +1,8 @@
 package minimax.fourinarow.performance.arrays;
 
-import minimax.fourinarow.core.arrays.FourInARowAgent;
+import minimax.fourinarow.core.arrays.agents.FourInARowAgent;
+import minimax.fourinarow.core.arrays.agents.FourInARowThreadSafeAgent;
+import minimax.fourinarow.core.arrays.core.FourInARowDeepCopier;
 import minimax.fourinarow.core.arrays.core.FourInARowEvaluationFunction;
 import minimax.fourinarow.core.arrays.core.FourInARowGameState;
 import minimax.fourinarow.core.arrays.core.FourInARowMove;
@@ -45,8 +47,7 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 					Piece.__EMPTY___, Piece.__EMPTY___ },
 			{ Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___,
 					Piece.__EMPTY___, Piece.__EMPTY___ } };
-	public static FourInARowGameState EMPTY_STATE = new FourInARowGameState(EMPTY_MOVE, EMPTY_BOARD, Piece.PLAYER_ONE,
-			true);
+	public static FourInARowGameState EMPTY_STATE = new FourInARowGameState(EMPTY_MOVE, EMPTY_BOARD, Piece.PLAYER_ONE);
 
 	/**
 	 * Easy win state of FourInARowGame to attempt see how quickly the Agent will
@@ -67,7 +68,7 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 			{ Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___, Piece.PLAYER_ONE, Piece.PLAYER_TWO,
 					Piece.__EMPTY___, Piece.__EMPTY___ } };
 	public static FourInARowGameState ALMOST_MIDDLE_WIN_STATE = new FourInARowGameState(ALMOST_MIDDLE_WIN_MOVE,
-			ALMOST_MIDDLE_WIN_BOARD, Piece.PLAYER_ONE, true);
+			ALMOST_MIDDLE_WIN_BOARD, Piece.PLAYER_ONE);
 
 	/**
 	 * Number of iterations used in timing runs.
@@ -96,12 +97,16 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 	public static void main(String[] args) throws InterruptedException {
 		PerformanceEvaluationFunction<FourInARowGameState> evaluator = new PerformanceEvaluationFunction<FourInARowGameState>(
 				new FourInARowEvaluationFunction());
-		FourInARowAgent tester = new FourInARowPerformanceAgent(EMPTY_STATE.deepCopy(true), evaluator);
+		FourInARowDeepCopier cp = new FourInARowDeepCopier();
+		FourInARowAgent tester = new FourInARowPerformanceAgent(cp.deepCopy(EMPTY_STATE), evaluator);
+		FourInARowThreadSafeAgent tstester = new FourInARowThreadSafePerformanceAgent(evaluator);
 		TimingUtilities<FourInARowMove, FourInARowGameState> timer = new TimingUtilities<FourInARowMove, FourInARowGameState>();
 		evaluator.resetCounter();
-		long time = timer.averageTimedEvaluationIterativeMultipleDepths(1, tester, 2, 12, true);
-		PrintUtilities.printWithWords(15, time, evaluator.getCounterString());
-		System.out.println(tester.getBestMove().toString());
+		while (Math.abs(evaluator.evaluate(EMPTY_STATE, 100, -100)) != 100 && EMPTY_STATE.getPlyNumber() != 42) {
+			FourInARowMove move = tstester.iterativeSearch(cp.deepCopy(EMPTY_STATE), 1, 42, false, 60000);
+			EMPTY_STATE.makeMove(move);
+			System.out.println(EMPTY_STATE.toString());
+		}
 		System.exit(0);
 	}
 

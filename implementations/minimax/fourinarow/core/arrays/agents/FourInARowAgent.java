@@ -1,4 +1,4 @@
-package minimax.fourinarow.core.arrays;
+package minimax.fourinarow.core.arrays.agents;
 
 import minimax.fourinarow.core.arrays.core.FourInARowEvaluationFunction;
 import minimax.fourinarow.core.arrays.core.FourInARowGameState;

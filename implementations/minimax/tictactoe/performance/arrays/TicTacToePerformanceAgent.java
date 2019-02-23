@@ -23,7 +23,7 @@ public class TicTacToePerformanceAgent extends TicTacToeMiniMaxAgent {
 	private static Piece[][] EMPTY_BOARD = new Piece[][] { { Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___ },
 			{ Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___ },
 			{ Piece.__EMPTY___, Piece.__EMPTY___, Piece.__EMPTY___ } };
-	private static TicTacToeGameState EMPTY_STATE = new TicTacToeGameState(EMPTY_MOVE, true, EMPTY_BOARD,
+	private static TicTacToeGameState EMPTY_STATE = new TicTacToeGameState(EMPTY_MOVE, EMPTY_BOARD,
 			Piece.PLAYER_ONE);
 
 	public TicTacToePerformanceAgent(TicTacToeGameState gameState, EvaluationFunction<TicTacToeGameState> evaluator) {
@@ -33,7 +33,7 @@ public class TicTacToePerformanceAgent extends TicTacToeMiniMaxAgent {
 	public static void main(String[] args) {
 		PerformanceEvaluationFunction<TicTacToeGameState> evaluator = new PerformanceEvaluationFunction<TicTacToeGameState>(
 				new TicTacToeEvaluationFunction());
-		TicTacToePerformanceAgent tester = new TicTacToePerformanceAgent(EMPTY_STATE.deepCopy(true), evaluator);
+		TicTacToePerformanceAgent tester = new TicTacToePerformanceAgent(EMPTY_STATE, evaluator);
 		TimingUtilities<TicTacToeMove, TicTacToeGameState> timer = new TimingUtilities<TicTacToeMove, TicTacToeGameState>();
 		long time = timer.timedEvaluate(tester, 9, true);
 		PrintUtilities.printWithWords(9, time, evaluator.getCounterString());

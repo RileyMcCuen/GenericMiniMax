@@ -1,4 +1,4 @@
-package utils.implementation.minimax.threadsafepv;
+package utils.implementation.minimax.threadsafe;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -8,25 +8,25 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import utils.datastructures.stack.Stack;
 import utils.implementation.core.AbstractGameState;
 import utils.implementation.core.AbstractMove;
 import utils.implementation.core.DeepCopy;
 import utils.implementation.core.EvaluationFunction;
+import utils.implementation.core.MoveGeneration;
+import utils.implementation.core.MutableMove;
 
-public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G extends AbstractGameState<M>>
-		implements ThreadSafePVMiniMaxAgent<M, G> {
+public abstract class AbstractThreadSafeMiniMaxAgent<M extends AbstractMove, G extends AbstractGameState<M>>
+		implements ThreadSafeMiniMaxAgent<M, G> {
 	public static final int MINIMUM_DEPTH = 0;
 	public static final int ALPHA_BEGINNING_VALUE = Integer.MIN_VALUE;
 	public static final int BETA_BEGINNING_VALUE = Integer.MAX_VALUE;
 	public static final long DEFAULT_SEARCH_TIME_MS = 5000;
 
-	protected G gameState;
 	protected DeepCopy<G> copier;
-	protected MoveGenerationWithPV<M, G> moveGenerator;
+	protected MoveGeneration<M, G> moveGenerator;
 	protected EvaluationFunction<G> evaluator;
 	protected final ExecutorService xs = Executors.newSingleThreadScheduledExecutor();
-	protected Stack<M> bestPath = null;
+	protected M bestMove = null;
 
 	/**
 	 * These values are passed to the evaluation function and if an evaluation is
@@ -38,17 +38,15 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 
 	/**
 	 * 
-	 * Instantiates an a MiniMaxAgent that has the default terminalEvaluation values
-	 * of +/-100.
+	 * Instantiates a MiniMaxAgent that has the default terminalEvaluation values of
+	 * +/-100.
 	 * 
-	 * @param gameState
 	 * @param copier
 	 * @param moveGenerator
 	 * @param evaluator
 	 */
-	protected AbstractThreadSafePVMiniMaxAgent(G gameState, DeepCopy<G> copier, MoveGenerationWithPV<M, G> moveGenerator,
+	protected AbstractThreadSafeMiniMaxAgent(DeepCopy<G> copier, MoveGeneration<M, G> moveGenerator,
 			EvaluationFunction<G> evaluator) {
-		this.gameState = gameState;
 		this.copier = copier;
 		this.moveGenerator = moveGenerator;
 		this.evaluator = evaluator;
@@ -56,15 +54,14 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 
 	/**
 	 * 
-	 * Instantiates an a MiniMaxAgent that has custom terminalEvaluation values.
+	 * Instantiates a MiniMaxAgent that has custom terminalEvaluation values.
 	 * 
-	 * @param gameState
+	 * @param copier
 	 * @param moveGenerator
 	 * @param evaluator
 	 */
-	public AbstractThreadSafePVMiniMaxAgent(G gameState, DeepCopy<G> copier, MoveGenerationWithPV<M, G> moveGenerator,
+	public AbstractThreadSafeMiniMaxAgent(DeepCopy<G> copier, MoveGeneration<M, G> moveGenerator,
 			EvaluationFunction<G> evaluator, int positiveTerminalEvaluation, int negativeTerminalEvaluation) {
-		this.gameState = gameState;
 		this.copier = copier;
 		this.moveGenerator = moveGenerator;
 		this.evaluator = evaluator;
@@ -76,15 +73,15 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 	 * 
 	 * @return - group of moves that can be used to modify the game-state.
 	 */
-	private Stack<M> getMoves(M pvMove) {
-		return moveGenerator.generateMoves(gameState, pvMove);
+	private Iterable<M> getMoves(G gameState) {
+		return moveGenerator.generateMoves(gameState);
 	};
 
 	/**
 	 * 
 	 * @return - an evaluation for the gameState.
 	 */
-	private int evaluate() {
+	private int evaluate(G gameState) {
 		return evaluator.evaluate(gameState, positiveTerminalEvaluation, negativeTerminalEvaluation);
 	};
 
@@ -92,17 +89,9 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 	 * 
 	 * @param move - the move that will be used to manipulate the game-state.
 	 */
-	private void makeMove(M move) {
+	private G makeMove(G gameState, M move) {
 		gameState.makeMove(move);
-	};
-
-	/**
-	 * 
-	 * @param move - the move that will be used to undo a call to the makeMove()
-	 *             function that used the same move the game-state.
-	 */
-	private void undoMove(M move) {
-		gameState.undoMove(move);
+		return gameState;
 	};
 
 	/**
@@ -111,28 +100,7 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 	 *         return null.
 	 */
 	public M getBestMove() {
-		return bestPath.peekMove();
-	}
-
-	/**
-	 * Updates the gameState to the one given.
-	 * 
-	 * @param gameState
-	 */
-	public void setState(G gameState) {
-		this.gameState = gameState;
-	}
-
-	/**
-	 * 
-	 * Checks all terminal search conditions.
-	 * 
-	 * @param depth      - current search depth.
-	 * @param evaluation - evaluation of game-state.
-	 * @return - whether to end current search or not.
-	 */
-	private boolean shouldEndSearch(int depth, int evaluation) {
-		return depth == 0 || evaluation == positiveTerminalEvaluation || evaluation == negativeTerminalEvaluation;
+		return bestMove;
 	}
 
 	/**
@@ -145,30 +113,28 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 	 * @return - the minimum value of all potential moves.
 	 * @throws InterruptedException
 	 */
-	private int findMin(G gameState, Stack<M> movePath, Stack<M> startPath, int depth, int alpha, int beta)
+	private int findMin(G gameState, MutableMove<M> bestMove, int depth, int maxDepth, int alpha, int beta)
 			throws InterruptedException {
 		if (Thread.currentThread().isInterrupted()) {
-			throw new InterruptedException("Stopped at depth: " + depth);
+			throw new InterruptedException();
 		}
-		int evaluation = evaluate();
-		if (shouldEndSearch(depth, evaluation)) {
+		int evaluation = evaluate(gameState);
+		if (depth == maxDepth || evaluation == positiveTerminalEvaluation || evaluation == negativeTerminalEvaluation) {
 			return evaluation;
 		}
-		Stack<M> bestStack = null;
-		for (M move : getMoves(startPath.popMove())) {
-			Stack<M> passStack = new Stack<M>();
-			makeMove(move);
-			move.setValue(findMax(copier.deepCopy(gameState), passStack, startPath, depth - 1, alpha, beta));
-			undoMove(move);
+		for (M move : getMoves(gameState)) {
+			move.setValue(
+					findMax(makeMove(copier.deepCopy(gameState), move), bestMove, depth + 1, maxDepth, alpha, beta));
 			if (move.getValue() < beta) {
 				beta = move.getValue();
-				bestStack = passStack;
+				if (depth == 0) {
+					bestMove.setMove(move);
+				}
 			}
 			if (alpha >= beta) {
 				return Integer.MIN_VALUE;
 			}
 		}
-		movePath.swapStack(bestStack);
 		return beta;
 	}
 
@@ -182,69 +148,67 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 	 * @return - the maximum value of all potential moves.
 	 * @throws InterruptedException
 	 */
-	private int findMax(G gameState, Stack<M> movePath, Stack<M> startPath, int depth, int alpha, int beta)
+	private int findMax(G gameState, MutableMove<M> bestMove, int depth, int maxDepth, int alpha, int beta)
 			throws InterruptedException {
 		if (Thread.currentThread().isInterrupted()) {
-			throw new InterruptedException("Stopped at depth: " + depth);
+			throw new InterruptedException();
 		}
-		int evaluation = evaluate();
-		if (shouldEndSearch(depth, evaluation)) {
+		int evaluation = evaluate(gameState);
+		if (depth == maxDepth || evaluation == positiveTerminalEvaluation || evaluation == negativeTerminalEvaluation) {
 			return evaluation;
 		}
-		Stack<M> bestStack = null;
-		for (M move : getMoves(startPath.popMove())) {
-			Stack<M> passStack = new Stack<M>(move);
-			makeMove(move);
-			move.setValue(findMin(copier.deepCopy(gameState), passStack, startPath, depth - 1, alpha, beta));
-			undoMove(move);
+		for (M move : getMoves(gameState)) {
+			move.setValue(
+					findMin(makeMove(copier.deepCopy(gameState), move), bestMove, depth + 1, maxDepth, alpha, beta));
 			if (move.getValue() > alpha) {
 				alpha = move.getValue();
-				bestStack = passStack;
+				if (depth == 0) {
+					bestMove.setMove(move);
+				}
 			}
 			if (alpha >= beta) {
 				return Integer.MAX_VALUE;
 			}
 		}
-		movePath.swapStack(bestStack);
 		return alpha;
 	}
 
 	@Override
-	public Stack<M> searchWithPV(int depth, boolean findMax, Stack<M> startPath) throws InterruptedException {
+	public M search(G gameState, int depth, boolean findMax) throws InterruptedException {
 		if (Thread.currentThread().isInterrupted()) {
 			throw new InterruptedException();
 		}
-		Stack<M> bestPath = new Stack<M>();
-		G copyOfGameState = copier.deepCopy(gameState);
+		MutableMove<M> move = new MutableMove<>();
 		if (findMax) {
-			findMax(copyOfGameState, bestPath, startPath, depth, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
+			findMax(gameState, move, 0, depth, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
 		} else {
-			findMin(copyOfGameState, bestPath, startPath, depth, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
+			findMin(gameState, move, 0, depth, ALPHA_BEGINNING_VALUE, BETA_BEGINNING_VALUE);
 		}
-		return bestPath;
+		return move.getMove();
 	}
 
 	@Override
-	public M iterativeSearchWithPV(int minDepth, int maxDepth, boolean findMax, Stack<M> startPath, long time) {
+	public M iterativeSearch(G gameState, int minDepth, int maxDepth, boolean findMax, long time) {
 		long timeLeft = time;
 		int depth = minDepth;
-		while(depth++ <= maxDepth) {
+		while (depth++ < maxDepth) {
 			int _depth = depth;
-			long startTime = System.nanoTime();
-			Callable<Stack<M>> search = new Callable<Stack<M>>() {
-				
+			long startTime = System.currentTimeMillis();
+			Callable<M> search = new Callable<M>() {
+
 				@Override
-				public Stack<M> call() throws Exception {
-					return searchWithPV(_depth, findMax, startPath);
+				public M call() throws Exception {
+					return search(copier.deepCopy(gameState), _depth, findMax);
 				}
-				
+
 			};
-			Future<Stack<M>> searchResult = xs.submit(search);
+			Future<M> searchResult = xs.submit(search);
 			try {
-				bestPath = searchResult.get(timeLeft, TimeUnit.MILLISECONDS);
-				timeLeft -= (System.nanoTime() - startTime);
+				M move = searchResult.get(timeLeft, TimeUnit.MILLISECONDS);
+				this.bestMove = move;
+				long timeTaken = System.currentTimeMillis() - startTime;
+				timeLeft -= timeTaken;
 			} catch (InterruptedException | ExecutionException | TimeoutException e) {
-				e.printStackTrace();
 				return getBestMove();
 			}
 		}
@@ -258,5 +222,4 @@ public abstract class AbstractThreadSafePVMiniMaxAgent<M extends AbstractMove, G
 	 */
 	@Override
 	public abstract String toString();
-
 }

@@ -3,6 +3,7 @@ package utils.performance;
 import utils.implementation.core.AbstractGameState;
 import utils.implementation.core.AbstractMove;
 import utils.implementation.minimax.notthreadsafe.AbstractMiniMaxAgent;
+import utils.implementation.minimax.threadsafe.AbstractThreadSafeMiniMaxAgent;
 
 /**
  * 
@@ -98,6 +99,23 @@ public class TimingUtilities<M extends AbstractMove, G extends AbstractGameState
 		agent.searchIterativeDeepening(minDepth, maxDepth, findMax, Long.MAX_VALUE);
 		return System.nanoTime() - start;
 	}
+	
+	/**
+	 * Times the iterative deepening method going through all its levels.
+	 * 
+	 * @param agent
+	 * @param minDepth
+	 * @param maxDepth
+	 * @param findMax
+	 * @return - the average search time in nano seconds after the specified
+	 *         iterations.
+	 */
+	public long timedEvaluateIterativeMultipleDepths(G gameState, AbstractThreadSafeMiniMaxAgent<M, G> agent, int minDepth, int maxDepth,
+			boolean findMax) {
+		long start = System.nanoTime();
+		agent.iterativeSearch(gameState, minDepth, maxDepth, findMax, Long.MAX_VALUE);
+		return System.nanoTime() - start;
+	}
 
 	/**
 	 * * Times and averages several searches using iterative deepening in the range
@@ -116,6 +134,27 @@ public class TimingUtilities<M extends AbstractMove, G extends AbstractGameState
 		long total = 0;
 		for (int i = 0; i < iterations; ++i) {
 			total += timedEvaluateIterativeMultipleDepths(agent, minDepth, maxDepth, findMax) / iterations;
+		}
+		return total;
+	}
+	
+	/**
+	 * * Times and averages several searches using iterative deepening in the range
+	 * applied.
+	 * 
+	 * @param iterations
+	 * @param agent
+	 * @param minDepth
+	 * @param maxDepth
+	 * @param findMax
+	 * @return - the average search time in nano seconds after the specified
+	 *         iterations.
+	 */
+	public long averageTimedEvaluationIterativeMultipleDepths(int iterations, G gameState, AbstractThreadSafeMiniMaxAgent<M, G> agent,
+			int minDepth, int maxDepth, boolean findMax) {
+		long total = 0;
+		for (int i = 0; i < iterations; ++i) {
+			total += timedEvaluateIterativeMultipleDepths(gameState, agent, minDepth, maxDepth, findMax) / iterations;
 		}
 		return total;
 	}

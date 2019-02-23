@@ -8,7 +8,7 @@ import utils.implementation.core.AbstractGameState;
 /**
  * Tic Tac Toe game-state. Reuses the Piece enumeration from Four In A Row.
  * 
- * @author Riley
+ * @author Riley McCuen
  *
  */
 public class TicTacToeGameState extends AbstractGameState<TicTacToeMove> {
@@ -20,8 +20,8 @@ public class TicTacToeGameState extends AbstractGameState<TicTacToeMove> {
 	private Piece[][] board;
 	private Piece currentPlayer;
 
-	public TicTacToeGameState(int plyNumber, boolean externallyMutable, Piece[][] board, Piece currentPlayer) {
-		super(plyNumber, externallyMutable);
+	public TicTacToeGameState(int plyNumber, Piece[][] board, Piece currentPlayer) {
+		super(plyNumber);
 		this.board = board;
 		this.currentPlayer = currentPlayer;
 	}
@@ -59,20 +59,11 @@ public class TicTacToeGameState extends AbstractGameState<TicTacToeMove> {
 	 *         game board otherwise returns a copy.
 	 */
 	public Piece[][] getBoard() {
-		if (externallyMutable) {
-			return board;
-		} else {
-			return copyBoard();
-		}
+		return copyBoard();
 	}
 
 	public Piece getCurrentPlayer() {
 		return currentPlayer;
-	}
-
-	@Override
-	public TicTacToeGameState deepCopy(boolean externallyMutable) {
-		return new TicTacToeGameState(plyNumber, externallyMutable, getBoard(), getCurrentPlayer());
 	}
 
 	@Override
