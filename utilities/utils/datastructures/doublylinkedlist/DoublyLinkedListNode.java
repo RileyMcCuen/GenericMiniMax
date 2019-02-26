@@ -1,39 +1,25 @@
 package utils.datastructures.doublylinkedlist;
 
-public class DoublyLinkedListNode<E> {
-
-	private DoublyLinkedListNode<E> prev, next;
-
-	private E value;
-
-	public DoublyLinkedListNode(E value) {
-		this.prev = null;
-		this.next = null;
-		this.value = value;
-	}
-
-	public DoublyLinkedListNode<E> getPrev() {
-		return prev;
-	}
-
-	public void setPrev(DoublyLinkedListNode<E> prev) {
-		this.prev = prev;
-	}
-
-	public DoublyLinkedListNode<E> getNext() {
+public class DoublyLinkedListNode<V, D extends DoublyLinkedListNode<V, D>> {
+	
+	private D prev, next;
+	
+	protected V data;
+	
+	public D getNext() {
 		return next;
 	}
-
-	public void setNext(DoublyLinkedListNode<E> next) {
-		this.next = next;
+	public void setNext(D node) {
+		this.next = node;
 	}
-
-	public E getValue() {
-		return value;
+	public D getPrev() {
+		return this.prev;
 	}
-
-	public void setValue(E value) {
-		this.value = value;
+	public void setPrev(D node) {
+		this.prev = node;
+	}
+	public V getData() {
+		return data;
 	}
 
 }

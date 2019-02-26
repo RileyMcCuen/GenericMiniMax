@@ -103,7 +103,7 @@ public class FourInARowPerformanceAgent extends FourInARowAgent {
 		TimingUtilities<FourInARowMove, FourInARowGameState> timer = new TimingUtilities<FourInARowMove, FourInARowGameState>();
 		evaluator.resetCounter();
 		while (Math.abs(evaluator.evaluate(EMPTY_STATE, 100, -100)) != 100 && EMPTY_STATE.getPlyNumber() != 42) {
-			FourInARowMove move = tstester.iterativeSearch(cp.deepCopy(EMPTY_STATE), 1, 42, false, 60000);
+			FourInARowMove move = tstester.iterativeSearch(cp.deepCopy(EMPTY_STATE), 1, 42, EMPTY_STATE.getCurrentPlayer() == Piece.PLAYER_ONE, 30000);
 			EMPTY_STATE.makeMove(move);
 			System.out.println(EMPTY_STATE.toString());
 		}
