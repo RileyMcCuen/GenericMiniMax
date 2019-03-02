@@ -1,10 +1,16 @@
-package utils.datastructures.hashmap;
+package utils.datastructures.hashmap.kvpair;
 
+/**
+ * Standard key value pair object.
+ * 
+ * @author Riley McCuen
+ *
+ */
 public class KeyValuePair<K, V> extends Object {
-	
+
 	private final K key;
 	private V value;
-	
+
 	public KeyValuePair(K key, V value) {
 		this.key = key;
 		this.value = value;
@@ -13,7 +19,7 @@ public class KeyValuePair<K, V> extends Object {
 	public K getKey() {
 		return key;
 	}
-	
+
 	public void setValue(V value) {
 		this.value = value;
 	}
@@ -21,21 +27,21 @@ public class KeyValuePair<K, V> extends Object {
 	public V getValue() {
 		return value;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return key.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(!(this.key.getClass().isInstance(obj))) {
+		if (!(this.key.getClass().isInstance(obj))) {
 			return false;
 		} else {
 			return this.key.equals(obj);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return value.toString();

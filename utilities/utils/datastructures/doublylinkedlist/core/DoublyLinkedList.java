@@ -1,4 +1,4 @@
-package utils.datastructures.doublylinkedlist;
+package utils.datastructures.doublylinkedlist.core;
 
 import java.util.Iterator;
 
@@ -21,6 +21,10 @@ public class DoublyLinkedList<V extends Object, D extends DoublyLinkedListNode<V
 
 	public boolean empty() {
 		return head == null;
+	}
+	
+	public D getHead() {
+		return this.head;
 	}
 	
 	public void addLast(V value) {
